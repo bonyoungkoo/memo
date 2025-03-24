@@ -1,18 +1,19 @@
-import { Typography } from "@mui/material"
+import { Typography } from "@mui/material";
 
-export default function MemoContent({content}: {content: string}) {
+export default function MemoContent({ content }: { content: string }) {
   return (
-    <Typography 
-      variant="body1"  
-      sx={{ 
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-        display: '-webkit-box',
+    <Typography
+      variant="body1"
+      sx={{
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        wordBreak: "break-word",
+        display: "-webkit-box",
         WebkitLineClamp: 1,
-        WebkitBoxOrient: 'vertical'
-    }}>
+        WebkitBoxOrient: "vertical",
+      }}
+    >
       {content}
     </Typography>
-  )
+  );
 }

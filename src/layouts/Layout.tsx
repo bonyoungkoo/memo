@@ -12,10 +12,15 @@ export default function Layout({
   // footer,
 }: Layout) {
   return (
-    <Box sx={{ height: '100dvh', width: '100dvw' }}>
-      <Stack justifyContent={'center'} alignItems={'center'} sx={{ height: '10%' }}>{header && header}</Stack>
-      <Box sx={{ height: '90%', overflow: 'auto'}}>{body && body}</Box>
-      {/* {footer && footer} */}
+    <Box sx={{ height: "100dvh", width: "100dvw" }}>
+      <Stack
+        justifyContent={"center"}
+        alignItems={"center"}
+        sx={{ height: "10%" }}
+      >
+        {header && header}
+      </Stack>
+      <Box sx={{ height: "90%", overflow: "auto" }}>{body && body}</Box>
     </Box>
-  )
+  );
 }
