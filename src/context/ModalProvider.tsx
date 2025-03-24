@@ -1,5 +1,6 @@
 import { useState } from "react";
-import Modal, { ModalProps } from "src/components/Modal";
+
+import Modal, { ModalProps } from "src/components/modal/DialogModal";
 import ModalContext from "src/context/ModalContext";
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {

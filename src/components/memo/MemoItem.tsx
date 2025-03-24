@@ -1,11 +1,20 @@
-import { Divider, IconButton, Paper, Stack } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Memo } from "src/stores/memo";
-import MemoContent from "src/components/MemoContent";
-import MemoDate from "src/components/MemoDate";
-import MemoTitle from "src/components/MemoTitle";
+import { Divider, IconButton, Paper, Stack } from "@mui/material";
 
+import MemoContent from "src/components/memo/MemoContent";
+import MemoDate from "src/components/memo/MemoDate";
+import MemoTitle from "src/components/memo/MemoTitle";
+import { Memo } from "src/stores/memo";
+
+/**
+ * MemoItem
+ * @param item 메모 객체
+ * @param onClickMemo 메모 컴포넌트 클릭 콜백함수
+ * @param onClickUpdate 수정버튼 클릭 콜백함수
+ * @param onClickDelete 삭제버튼 클릭 콜백함수
+ * @returns ReactNode
+ */
 export default function MemoItem({
   item,
   onClickMemo,

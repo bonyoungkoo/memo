@@ -1,16 +1,19 @@
-import { useCallback, useState } from "react";
-import { Box, Button, Container, Drawer, Fab, Stack } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
-import MemoItem from "src/components/MemoItem";
-import useMemoStore, { Memo } from "src/stores/memo";
-import { useModal } from "src/components/hooks/useModal";
-import { ModalType } from "src/components/Modal";
+import { Box, Button, Container, Fab } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 
-enum MemoModalType {
+import { useCallback, useState } from "react";
+
+import MemoItem from "src/components/memo/MemoItem";
+import { ModalType } from "src/components/modal/DialogModal";
+import MemoModal from "src/components/modal/MemoModal";
+import { useModal } from "src/hooks/useModal";
+import useMemoStore, { Memo } from "src/stores/memo";
+
+export enum MemoModalType {
   ADD = "add",
   UPDATE = "update",
   DETAIL = "detail",
@@ -70,22 +73,42 @@ export default function List() {
     return;
   };
 
-  const handleClickCloseButton = () => {
-    openModal({
-      type: ModalType.CONFIRM,
-      contentText: "메모 작성을 취소하시겠습니까?",
-      cancleText: "취소",
-      confirmText: "확인",
-      onClickCancle: () => closeModal(),
-      onClickConfirm: () => {
-        setIsMemoModalOpen(false);
-        closeModal();
-      },
-    });
-    return;
-  };
+  const handleClickCloseButton = useCallback(() => {
+    if (type === MemoModalType.DETAIL) {
+      setIsMemoModalOpen(false);
+      return;
+    }
+    if (type === MemoModalType.ADD) {
+      openModal({
+        type: ModalType.CONFIRM,
+        contentText: "메모 작성을 취소하시겠습니까?",
+        cancleText: "취소",
+        confirmText: "확인",
+        onClickCancle: () => closeModal(),
+        onClickConfirm: () => {
+          setIsMemoModalOpen(false);
+          closeModal();
+        },
+      });
+      return;
+    }
+    if (type === MemoModalType.UPDATE) {
+      openModal({
+        type: ModalType.CONFIRM,
+        contentText: "메모 수정을 취소하시겠습니까?",
+        cancleText: "취소",
+        confirmText: "확인",
+        onClickCancle: () => closeModal(),
+        onClickConfirm: () => {
+          setIsMemoModalOpen(false);
+          closeModal();
+        },
+      });
+      return;
+    }
+  }, [closeModal, openModal, type]);
 
-  const handleClickDeleteButton = () => {
+  const handleClickDeleteButton = useCallback(() => {
     setMemo(memo);
     openModal({
       type: ModalType.CONFIRM,
@@ -99,7 +122,7 @@ export default function List() {
       },
     });
     return;
-  };
+  }, [closeModal, memo, openModal, remove]);
 
   const handleClickRegisterButton = useCallback(() => {
     if (type === MemoModalType.ADD) {
@@ -108,11 +131,7 @@ export default function List() {
           type: ModalType.ALERT,
           contentText: "제목을 입력하세요.",
           confirmText: "확인",
-          onClickCancle: () => closeModal(),
-          onClickConfirm: () => {
-            remove(memo!.id);
-            closeModal();
-          },
+          onClickConfirm: () => closeModal(),
         });
         return;
       }
@@ -121,11 +140,7 @@ export default function List() {
           type: ModalType.ALERT,
           contentText: "내용을 2자 이상 입력하세요.",
           confirmText: "확인",
-          onClickCancle: () => closeModal(),
-          onClickConfirm: () => {
-            remove(memo!.id);
-            closeModal();
-          },
+          onClickConfirm: () => closeModal(),
         });
         return;
       }
@@ -168,7 +183,6 @@ export default function List() {
     content,
     add,
     update,
-    remove,
     openModal,
     closeModal,
   ]);
@@ -187,6 +201,96 @@ export default function List() {
     const now = new Date();
     return `${now.getFullYear()}.${now.getMonth() + 1}.${now.getDate()} ${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
   };
+
+  const renderButtons = useCallback(() => {
+    switch (type) {
+      case MemoModalType.ADD:
+        return (
+          <>
+            <Button
+              onClick={handleClickCloseButton}
+              variant="contained"
+              endIcon={<CloseIcon />}
+              sx={{ backgroundColor: "grey" }}
+            >
+              취소
+            </Button>
+            <Button
+              onClick={handleClickRegisterButton}
+              variant="contained"
+              endIcon={<EditIcon />}
+            >
+              등록
+            </Button>
+          </>
+        );
+      case MemoModalType.UPDATE:
+        return (
+          <>
+            <Button
+              onClick={handleClickCloseButton}
+              variant="contained"
+              endIcon={<CloseIcon />}
+              sx={{ backgroundColor: "grey" }}
+            >
+              취소
+            </Button>
+            <Button
+              onClick={handleClickRegisterButton}
+              variant="contained"
+              endIcon={<EditIcon />}
+            >
+              수정
+            </Button>
+            <Button
+              onClick={handleClickDeleteButton}
+              variant="contained"
+              color="warning"
+              endIcon={<DeleteIcon />}
+            >
+              삭제
+            </Button>
+          </>
+        );
+      case MemoModalType.DETAIL:
+        return (
+          <>
+            <Button
+              onClick={handleClickCloseButton}
+              variant="contained"
+              endIcon={<CloseIcon />}
+              sx={{ backgroundColor: "grey" }}
+            >
+              확인
+            </Button>
+            <Button
+              onClick={handleClickDeleteButton}
+              variant="contained"
+              color="warning"
+              endIcon={<DeleteIcon />}
+            >
+              삭제
+            </Button>
+          </>
+        );
+      default:
+        return (
+          <Button
+            onClick={handleClickCloseButton}
+            variant="contained"
+            endIcon={<CloseIcon />}
+            sx={{ backgroundColor: "grey" }}
+          >
+            확인
+          </Button>
+        );
+    }
+  }, [
+    type,
+    handleClickCloseButton,
+    handleClickDeleteButton,
+    handleClickRegisterButton,
+  ]);
 
   return (
     <Container maxWidth="lg">
@@ -221,10 +325,23 @@ export default function List() {
         </Fab>
       </Box>
 
-      <Drawer
+      <MemoModal
+        open={isMemoModalOpen}
+        type={MemoModalType.ADD}
+        defaultTitle={memo?.title || ""}
+        defaultContent={memo?.content || ""}
+        onChangeInputTitle={handleInputChange}
+        onChangeTextareaContent={handleTextareaChange}
+        renderButtons={renderButtons}
+      />
+
+      {/* <Drawer
         aria-hidden={false}
         anchor={"bottom"}
         open={isMemoModalOpen}
+        {...(type === MemoModalType.DETAIL && {
+          onClose: () => setIsMemoModalOpen(false),
+        })}
         sx={{
           ".MuiPaper-root": { borderRadius: "24px 24px 0 0" },
         }}
@@ -247,6 +364,7 @@ export default function List() {
                 type="text"
                 placeholder="제목을 입력하세요."
                 defaultValue={memo && memo.title}
+                readOnly={type === MemoModalType.DETAIL ? true : false}
                 onChange={handleInputChange}
                 style={{
                   borderBottom: "1px solid grey",
@@ -259,6 +377,7 @@ export default function List() {
               <textarea
                 placeholder="내용을 2자 이상 입력하세요."
                 defaultValue={memo && memo.content}
+                readOnly={type === MemoModalType.DETAIL ? true : false}
                 onChange={handleTextareaChange}
                 style={{ flexGrow: 1, fontSize: "16px" }}
               />
@@ -266,37 +385,13 @@ export default function List() {
             <Box>
               <Stack direction="row" justifyContent={"flex-end"}>
                 <Stack direction="row" spacing={1}>
-                  <Button
-                    onClick={handleClickCloseButton}
-                    variant="contained"
-                    endIcon={<CloseIcon />}
-                    sx={{ backgroundColor: "grey" }}
-                  >
-                    취소
-                  </Button>
-                  <Button
-                    onClick={handleClickRegisterButton}
-                    variant="contained"
-                    endIcon={<EditIcon />}
-                  >
-                    등록
-                  </Button>
-                  {type !== MemoModalType.ADD && (
-                    <Button
-                      onClick={handleClickDeleteButton}
-                      variant="contained"
-                      color="warning"
-                      endIcon={<DeleteIcon />}
-                    >
-                      삭제
-                    </Button>
-                  )}
+                  {renderButtons()}
                 </Stack>
               </Stack>
             </Box>
           </Container>
         </Box>
-      </Drawer>
+      </Drawer> */}
     </Container>
   );
 }
