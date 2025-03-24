@@ -7,11 +7,21 @@ import MemoDate from "./MemoDate";
 import MemoContent from "./MemoContent";
 import { Memo } from "../stores/memo";
 
-export default function MemoItem({item, onClickEditButton}: {item: Memo, onClickEditButton: () => void}) {
+export default function MemoItem({
+  item, 
+  onClickMemo,
+  onClickUpdate,
+  onClickDelete
+}: {
+  item: Memo, 
+  onClickMemo: (item: Memo) => void
+  onClickUpdate: (item: Memo) => void
+  onClickDelete: (item: Memo) => void
+}) {
   return (
     <Paper sx={{ height: '100px', width: '100%', display: 'flex', flexDirection: 'column' }} variant="outlined">
       <Stack direction="row" sx={{ height: '150px', width: '100%' }}>
-        <Stack sx={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', width: '90%' }}>
+        <Stack sx={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', width: '90%', cursor: 'pointer' }} onClick={() => onClickMemo(item)}>
           <Stack sx={{ height: '60%', padding: '12px', backgroundColor: '#F8F8F7' }}>
             <MemoTitle title={item.title} />
             
@@ -22,16 +32,16 @@ export default function MemoItem({item, onClickEditButton}: {item: Memo, onClick
               <MemoContent content={item.content} />
             </Stack>
             <Stack sx={{ textAlign: 'end' }}>
-              <MemoDate date={'2025.3.20 오후 4:30'} />
+              <MemoDate date={item.createdAt} />
             </Stack>
           </Stack>
         </Stack>
-        <Stack direction="column" justifyContent={'space-around'}>
-          <IconButton aria-label="edit" onClick={onClickEditButton}>
+        <Stack direction="column" justifyContent={'space-around'} flexGrow={1}>
+          <IconButton aria-label="edit" onClick={() => onClickUpdate(item)}>
             <EditIcon />
           </IconButton>
-          <IconButton aria-label="delete">
-            <DeleteIcon />
+          <IconButton aria-label="delete" onClick={() => onClickDelete(item)}>
+            <DeleteIcon aria-label="delete" />
           </IconButton>
         </Stack>
       </Stack>
