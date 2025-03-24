@@ -1,13 +1,35 @@
 import { Box, Container, Drawer, Stack } from "@mui/material";
 
-import { MemoModalType } from "src/pages/List";
+/**
+ * 메모 폼 모달 타입
+ * ADD 생성
+ * UPDATE 수정
+ * DETAIL 상세
+ */
+export enum MemoModalType {
+  ADD = "add",
+  UPDATE = "update",
+  DETAIL = "detail",
+}
 
+/**
+ * 메모 폼 모달
+ * @param open 모달 열림/닫힘
+ * @param type 모달 타입 MemoModalType 참고
+ * @param defaultTitle 제목 초기값
+ * @param defaultContent 내용 초기값
+ * @param onClose 모달 닫을 시 콜백함수
+ * @param onChangeInputTitle 제목 input 변경 이벤트 콜백함수
+ * @param onChangeTextareaContent 내용 textarea 변경 이벤트 콜백함수
+ * @param renderButtons 렌더할 버튼 컴포넌트
+ * @returns ReactNode
+ */
 export default function MemoModal({
   open,
   type,
-  onClose,
   defaultTitle = "",
   defaultContent = "",
+  onClose,
   onChangeInputTitle,
   onChangeTextareaContent,
   renderButtons,

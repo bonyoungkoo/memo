@@ -1,7 +1,9 @@
 import { BrowserRouter } from "react-router-dom";
-import Router from "src/routes/Router";
-import "./styles/global.css";
+
 import ModalProvider from "src/context/ModalProvider";
+import Router from "src/routes/Router";
+
+import "./styles/global.css";
 
 function App() {
   return (

@@ -2,22 +2,16 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Box, Button, Container, Fab } from "@mui/material";
+import { Alert, Box, Button, Container, Fab, Snackbar } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 import { useCallback, useState } from "react";
 
 import MemoItem from "src/components/memo/MemoItem";
 import { ModalType } from "src/components/modal/DialogModal";
-import MemoModal from "src/components/modal/MemoModal";
+import MemoModal, { MemoModalType } from "src/components/modal/MemoModal";
 import { useModal } from "src/hooks/useModal";
 import useMemoStore, { Memo } from "src/stores/memo";
-
-export enum MemoModalType {
-  ADD = "add",
-  UPDATE = "update",
-  DETAIL = "detail",
-}
 
 export default function List() {
   const memoList = useMemoStore((state) => state.memoList);
@@ -27,7 +21,9 @@ export default function List() {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [type, setType] = useState<MemoModalType>(MemoModalType.ADD);
-  const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
+  const [isMemoModalOpen, setIsMemoModalOpen] = useState<boolean>(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const { openModal, closeModal } = useModal();
 
   const handleClickMemo = (memo: Memo) => {
@@ -59,6 +55,8 @@ export default function List() {
       onClickConfirm: () => {
         remove(memo.id);
         closeModal();
+        setSnackbarMessage("메모가 삭제되었습니다.");
+        setIsSnackbarOpen(true);
       },
     });
     return;
@@ -119,6 +117,8 @@ export default function List() {
       onClickConfirm: () => {
         remove(memo!.id);
         closeModal();
+        setSnackbarMessage("메모가 삭제되었습니다.");
+        setIsSnackbarOpen(true);
       },
     });
     return;
@@ -153,6 +153,8 @@ export default function List() {
       setTitle("");
       setContent("");
       setIsMemoModalOpen(false);
+      setSnackbarMessage("메모가 추가되었습니다.");
+      setIsSnackbarOpen(true);
       return;
     }
     if (type === MemoModalType.UPDATE) {
@@ -163,6 +165,8 @@ export default function List() {
         createdAt: getCreatedAt(),
       });
       setIsMemoModalOpen(false);
+      setSnackbarMessage("메모가 수정되었습니다.");
+      setIsSnackbarOpen(true);
       return;
     }
     if (type === MemoModalType.DETAIL) {
@@ -173,6 +177,7 @@ export default function List() {
         createdAt: getCreatedAt(),
       });
       setIsMemoModalOpen(false);
+      setIsSnackbarOpen(true);
       return;
     }
   }, [
@@ -319,7 +324,7 @@ export default function List() {
         <Fab
           color="primary"
           aria-label="add"
-          sx={{ position: "absolute", bottom: "16px" }}
+          sx={{ position: "absolute", bottom: "36px", right: "36px" }}
         >
           <AddIcon />
         </Fab>
@@ -327,6 +332,9 @@ export default function List() {
 
       <MemoModal
         open={isMemoModalOpen}
+        onClose={() =>
+          type === MemoModalType.DETAIL && setIsMemoModalOpen(false)
+        }
         type={MemoModalType.ADD}
         defaultTitle={memo?.title || ""}
         defaultContent={memo?.content || ""}
@@ -335,63 +343,21 @@ export default function List() {
         renderButtons={renderButtons}
       />
 
-      {/* <Drawer
-        aria-hidden={false}
-        anchor={"bottom"}
-        open={isMemoModalOpen}
-        {...(type === MemoModalType.DETAIL && {
-          onClose: () => setIsMemoModalOpen(false),
-        })}
-        sx={{
-          ".MuiPaper-root": { borderRadius: "24px 24px 0 0" },
-        }}
+      <Snackbar
+        open={isSnackbarOpen}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        onClose={() => setIsSnackbarOpen(false)}
       >
-        <Box sx={{ height: "90dvh", display: "flex", alignItems: "center" }}>
-          <Container
-            maxWidth="md"
-            sx={{
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              padding: "16px",
-              borderRadius: "50px",
-              backgroundColor: "#FFFFFF",
-            }}
-          >
-            <Stack gap={3} sx={{ height: "80%" }}>
-              <input
-                type="text"
-                placeholder="제목을 입력하세요."
-                defaultValue={memo && memo.title}
-                readOnly={type === MemoModalType.DETAIL ? true : false}
-                onChange={handleInputChange}
-                style={{
-                  borderBottom: "1px solid grey",
-                  padding: "12px 0",
-                  fontSize: "32px",
-                  fontWeight: "700",
-                  backgroundColor: "#FFFFFF",
-                }}
-              />
-              <textarea
-                placeholder="내용을 2자 이상 입력하세요."
-                defaultValue={memo && memo.content}
-                readOnly={type === MemoModalType.DETAIL ? true : false}
-                onChange={handleTextareaChange}
-                style={{ flexGrow: 1, fontSize: "16px" }}
-              />
-            </Stack>
-            <Box>
-              <Stack direction="row" justifyContent={"flex-end"}>
-                <Stack direction="row" spacing={1}>
-                  {renderButtons()}
-                </Stack>
-              </Stack>
-            </Box>
-          </Container>
-        </Box>
-      </Drawer> */}
+        <Alert
+          onClose={() => setIsSnackbarOpen(false)}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

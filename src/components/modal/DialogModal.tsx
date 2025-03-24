@@ -26,8 +26,8 @@ export interface ModalProps {
 }
 
 /**
- *
- * @param type 모달 타입
+ * DialogModal 취소/확인 다이얼로그 모달
+ * @param type 모달 타입 ModalType 참고
  * @param contentText 모달 내용 텍스트
  * @param cancleText 취소버튼 텍스트
  * @param confirmText 확인버튼 텍스트
@@ -35,7 +35,7 @@ export interface ModalProps {
  * @param onClickConfirm 확인버튼 클릭 콜백함수
  * @returns
  */
-export default function Modal({
+export default function DialogModal({
   type,
   contentText,
   cancleText = "취소",
