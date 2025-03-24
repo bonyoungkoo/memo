@@ -8,7 +8,7 @@ import "./styles/global.css";
 function App() {
   return (
     <ModalProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.VITE_BASE_URL}>
         <Router />
       </BrowserRouter>
     </ModalProvider>
