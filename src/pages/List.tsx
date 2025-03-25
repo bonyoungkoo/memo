@@ -86,7 +86,7 @@ export default function List() {
         openModal({
           type: ModalType.CONFIRM,
           contentText:
-            "작성중인 내용이 있습니다.\n메모 작성을 취소하시겠습니까?",
+            "작성 중인 내용이 있습니다.\n저장하지 않고 닫으시겠습니까?",
           cancleText: "취소",
           confirmText: "확인",
           onClickCancle: () => closeModal(),
@@ -105,7 +105,8 @@ export default function List() {
       if (memo?.title !== title || memo?.content !== content) {
         openModal({
           type: ModalType.CONFIRM,
-          contentText: "변경된 내용이 있습니다.\n메모 수정을 취소하시겠습니까?",
+          contentText:
+            "수정 중인 내용이 있습니다.\n변경 사항을 저장하지 않고 닫으시겠습니까?",
           cancleText: "취소",
           confirmText: "확인",
           onClickCancle: () => closeModal(),
@@ -120,7 +121,7 @@ export default function List() {
         return;
       }
     }
-  }, [closeModal, content, openModal, title, type]);
+  }, [closeModal, content, memo, openModal, title, type]);
 
   const handleClickDeleteButton = useCallback(() => {
     setMemo(memo);
