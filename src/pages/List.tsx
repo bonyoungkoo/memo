@@ -26,6 +26,11 @@ export default function List() {
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const { openModal, closeModal } = useModal();
 
+  /**
+   *
+   * @param memo
+   * @returns
+   */
   const handleClickMemo = (memo: Memo) => {
     setMemo(memo);
     setTitle(memo.title);
@@ -77,34 +82,45 @@ export default function List() {
       return;
     }
     if (type === MemoModalType.ADD) {
-      openModal({
-        type: ModalType.CONFIRM,
-        contentText: "메모 작성을 취소하시겠습니까?",
-        cancleText: "취소",
-        confirmText: "확인",
-        onClickCancle: () => closeModal(),
-        onClickConfirm: () => {
-          setIsMemoModalOpen(false);
-          closeModal();
-        },
-      });
-      return;
+      if (title || content) {
+        openModal({
+          type: ModalType.CONFIRM,
+          contentText:
+            "작성중인 내용이 있습니다.\n메모 작성을 취소하시겠습니까?",
+          cancleText: "취소",
+          confirmText: "확인",
+          onClickCancle: () => closeModal(),
+          onClickConfirm: () => {
+            setIsMemoModalOpen(false);
+            closeModal();
+          },
+        });
+        return;
+      } else {
+        setIsMemoModalOpen(false);
+        return;
+      }
     }
     if (type === MemoModalType.UPDATE) {
-      openModal({
-        type: ModalType.CONFIRM,
-        contentText: "메모 수정을 취소하시겠습니까?",
-        cancleText: "취소",
-        confirmText: "확인",
-        onClickCancle: () => closeModal(),
-        onClickConfirm: () => {
-          setIsMemoModalOpen(false);
-          closeModal();
-        },
-      });
-      return;
+      if (memo?.title !== title || memo?.content !== content) {
+        openModal({
+          type: ModalType.CONFIRM,
+          contentText: "변경된 내용이 있습니다.\n메모 수정을 취소하시겠습니까?",
+          cancleText: "취소",
+          confirmText: "확인",
+          onClickCancle: () => closeModal(),
+          onClickConfirm: () => {
+            setIsMemoModalOpen(false);
+            closeModal();
+          },
+        });
+        return;
+      } else {
+        setIsMemoModalOpen(false);
+        return;
+      }
     }
-  }, [closeModal, openModal, type]);
+  }, [closeModal, content, openModal, title, type]);
 
   const handleClickDeleteButton = useCallback(() => {
     setMemo(memo);
@@ -117,6 +133,7 @@ export default function List() {
       onClickConfirm: () => {
         remove(memo!.id);
         closeModal();
+        setIsMemoModalOpen(false);
         setSnackbarMessage("메모가 삭제되었습니다.");
         setIsSnackbarOpen(true);
       },
@@ -124,24 +141,31 @@ export default function List() {
     return;
   }, [closeModal, memo, openModal, remove]);
 
+  const isValidMemo = useCallback(() => {
+    if (!title) {
+      openModal({
+        type: ModalType.ALERT,
+        contentText: "제목을 입력하세요.",
+        confirmText: "확인",
+        onClickConfirm: () => closeModal(),
+      });
+      return false;
+    }
+    if (content.length < 2) {
+      openModal({
+        type: ModalType.ALERT,
+        contentText: "내용을 2자 이상 입력하세요.",
+        confirmText: "확인",
+        onClickConfirm: () => closeModal(),
+      });
+      return false;
+    }
+    return true;
+  }, [title, content, openModal, closeModal]);
+
   const handleClickRegisterButton = useCallback(() => {
     if (type === MemoModalType.ADD) {
-      if (!title) {
-        openModal({
-          type: ModalType.ALERT,
-          contentText: "제목을 입력하세요.",
-          confirmText: "확인",
-          onClickConfirm: () => closeModal(),
-        });
-        return;
-      }
-      if (content.length < 2) {
-        openModal({
-          type: ModalType.ALERT,
-          contentText: "내용을 2자 이상 입력하세요.",
-          confirmText: "확인",
-          onClickConfirm: () => closeModal(),
-        });
+      if (!isValidMemo()) {
         return;
       }
       add({
@@ -158,6 +182,17 @@ export default function List() {
       return;
     }
     if (type === MemoModalType.UPDATE) {
+      if (!isValidMemo()) {
+        return;
+      }
+      if (memo?.title === title && memo?.content === content) {
+        openModal({
+          type: ModalType.ALERT,
+          contentText: "메모가 이전과 동일합니다.\n수정할 내용을 입력해주세요.",
+          onClickConfirm: () => closeModal(),
+        });
+        return;
+      }
       update({
         id: memo!.id,
         title: title,
@@ -182,11 +217,12 @@ export default function List() {
     }
   }, [
     type,
+    isValidMemo,
+    add,
     memoList,
-    memo,
     title,
     content,
-    add,
+    memo,
     update,
     openModal,
     closeModal,
@@ -259,24 +295,14 @@ export default function List() {
         );
       case MemoModalType.DETAIL:
         return (
-          <>
-            <Button
-              onClick={handleClickCloseButton}
-              variant="contained"
-              endIcon={<CloseIcon />}
-              sx={{ backgroundColor: "grey" }}
-            >
-              확인
-            </Button>
-            <Button
-              onClick={handleClickDeleteButton}
-              variant="contained"
-              color="warning"
-              endIcon={<DeleteIcon />}
-            >
-              삭제
-            </Button>
-          </>
+          <Button
+            onClick={handleClickDeleteButton}
+            variant="contained"
+            color="warning"
+            endIcon={<DeleteIcon />}
+          >
+            삭제
+          </Button>
         );
       default:
         return (
@@ -299,7 +325,7 @@ export default function List() {
 
   return (
     <Container maxWidth="lg">
-      <Grid container spacing={2} sx={{ paddingBottom: "16px" }}>
+      <Grid container spacing={2} sx={{ paddingBottom: "56px" }}>
         {memoList.map((memo, i) => {
           return (
             <Grid
@@ -324,7 +350,7 @@ export default function List() {
         <Fab
           color="primary"
           aria-label="add"
-          sx={{ position: "absolute", bottom: "36px", right: "36px" }}
+          sx={{ position: "absolute", bottom: "16px", right: "16px" }}
         >
           <AddIcon />
         </Fab>
@@ -332,10 +358,9 @@ export default function List() {
 
       <MemoModal
         open={isMemoModalOpen}
-        onClose={() =>
-          type === MemoModalType.DETAIL && setIsMemoModalOpen(false)
-        }
-        type={MemoModalType.ADD}
+        onClose={handleClickCloseButton}
+        onClickCloseButton={handleClickCloseButton}
+        type={type}
         defaultTitle={memo?.title || ""}
         defaultContent={memo?.content || ""}
         onChangeInputTitle={handleInputChange}

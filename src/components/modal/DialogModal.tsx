@@ -46,7 +46,7 @@ export default function DialogModal({
   return (
     <Dialog open={true} sx={{}}>
       <DialogContent sx={{ width: "250px" }}>
-        <DialogContentText sx={{ fontSize: "16px" }}>
+        <DialogContentText sx={{ fontSize: "16px", whiteSpace: "pre-line" }}>
           {contentText}
         </DialogContentText>
       </DialogContent>

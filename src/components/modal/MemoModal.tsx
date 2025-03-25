@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import { Box, Container, Drawer, Stack } from "@mui/material";
 
 /**
@@ -30,6 +31,7 @@ export default function MemoModal({
   defaultTitle = "",
   defaultContent = "",
   onClose,
+  onClickCloseButton,
   onChangeInputTitle,
   onChangeTextareaContent,
   renderButtons,
@@ -37,6 +39,7 @@ export default function MemoModal({
   open: boolean;
   type: MemoModalType;
   onClose?: () => void;
+  onClickCloseButton: () => void;
   defaultTitle: string;
   defaultContent: string;
   onChangeInputTitle: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -54,6 +57,17 @@ export default function MemoModal({
       }}
     >
       <Box sx={{ height: "90dvh", display: "flex", alignItems: "center" }}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "16px",
+            right: "16px",
+            cursor: "pointer",
+          }}
+          onClick={onClickCloseButton}
+        >
+          <CloseIcon />
+        </Box>
         <Container
           maxWidth="md"
           sx={{
@@ -61,7 +75,7 @@ export default function MemoModal({
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            padding: "16px",
+            padding: "36px 16px",
             borderRadius: "50px",
             backgroundColor: "#FFFFFF",
           }}
