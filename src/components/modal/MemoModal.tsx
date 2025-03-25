@@ -1,8 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Container, Drawer, Stack } from "@mui/material";
 
-import { useEffect } from "react";
-
 import { Memo } from "src/stores/memo";
 
 /**
@@ -47,9 +45,6 @@ export default function MemoModal({
   onChangeTextareaContent: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   renderButtons: () => React.ReactNode;
 }) {
-  useEffect(() => {
-    console.log(memo);
-  }, []);
   return (
     <Drawer
       aria-hidden={false}
