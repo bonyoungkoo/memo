@@ -84,6 +84,9 @@ export default function MemoModal({
             backgroundColor: "#FFFFFF",
           }}
         >
+          {type === MemoModalType.DETAIL && (
+            <Stack sx={{ textAlign: "center" }}>{memo?.createdAt}</Stack>
+          )}
           <Stack gap={3} sx={{ height: "80%" }}>
             <input
               type="text"
@@ -108,9 +111,6 @@ export default function MemoModal({
             />
           </Stack>
           <Stack direction="column">
-            {type === MemoModalType.DETAIL && (
-              <Stack sx={{ textAlign: "center" }}>{memo?.createdAt}</Stack>
-            )}
             <Stack direction="row" justifyContent={"flex-end"} spacing={1}>
               {renderButtons()}
             </Stack>
