@@ -28,14 +28,13 @@ export default function MemoItem({
 }) {
   return (
     <Paper
-      elevation={2}
       sx={{
         height: "100px",
         width: "100%",
         display: "flex",
         flexDirection: "column",
       }}
-      variant="elevation"
+      variant="outlined"
     >
       <Stack direction="row" sx={{ height: "150px", width: "100%" }}>
         <Stack
