@@ -368,7 +368,7 @@ export default function List() {
    * - `handleClickRegisterButton`: 메모 등록 또는 수정하는 함수
    * - `handleClickDeleteButton`: 메모를 삭제하는 함수
    *
-   * @returns {JSX.Element} 현재 모달 타입에 맞는 버튼 JSX 요소를 반환
+   * @returns {ReactNode}
    */
   const renderButtons = useCallback(() => {
     switch (type) {

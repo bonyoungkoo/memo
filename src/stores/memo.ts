@@ -52,21 +52,10 @@ const useMemoStore = create<States & Actions>()(
         update: (memo: Memo) =>
           set((state) => {
             return {
-              memoList: state.memoList.map((v) =>
-                v.id === memo.id
-                  ? {
-                      id: memo.id,
-                      title: memo.title,
-                      content: memo.content,
-                      createdAt: memo.createdAt,
-                    }
-                  : {
-                      id: v.id,
-                      title: v.title,
-                      content: v.content,
-                      createdAt: v.createdAt,
-                    },
-              ),
+              memoList: [
+                { ...memo },
+                ...state.memoList.filter((v) => v.id !== memo.id),
+              ],
             };
           }),
         remove: (id: number) =>
