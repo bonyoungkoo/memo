@@ -146,7 +146,7 @@ export default function List() {
     if (!title) {
       openModal({
         type: ModalType.ALERT,
-        contentText: "제목을 입력하세요.",
+        contentText: "제목을 입력해주세요.",
         confirmText: "확인",
         onClickConfirm: () => closeModal(),
       });
@@ -155,7 +155,7 @@ export default function List() {
     if (content.length < 2) {
       openModal({
         type: ModalType.ALERT,
-        contentText: "내용을 2자 이상 입력하세요.",
+        contentText: "내용을 2자 이상 입력해주세요.",
         confirmText: "확인",
         onClickConfirm: () => closeModal(),
       });
