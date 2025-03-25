@@ -40,6 +40,7 @@ const initialState: States = {
  * - update 메모 수정
  * - remove 메모 삭제
  *
+ * 작성일(수정일) 순으로 추가 및 수정
  * 상태는 `localStorage`에 지속적으로 저장되어 앱을 새로 고침하거나 다시 시작해도 이전 데이터를 유지합니다.
  */
 const useMemoStore = create<States & Actions>()(
@@ -48,12 +49,12 @@ const useMemoStore = create<States & Actions>()(
       ...initialState,
       actions: {
         add: (memo: Memo) =>
-          set((state) => ({ memoList: [...state.memoList, memo] })),
+          set((state) => ({ memoList: [memo, ...state.memoList] })),
         update: (memo: Memo) =>
           set((state) => {
             return {
               memoList: [
-                { ...memo },
+                memo,
                 ...state.memoList.filter((v) => v.id !== memo.id),
               ],
             };

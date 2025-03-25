@@ -242,7 +242,7 @@ export default function List() {
    * 1. `MemoModalType.ADD`일 경우:
    *    - 메모의 제목과 내용이 유효한지 `isValidMemo`로 검증
    *    - 유효하지 않으면 `isValidMemo` 의 경고 모달을 띄우고 함수 종료
-   *    - 유효하면 새로운 메모를 `add` 함수로 추가하고, 메모 리스트의 마지막 ID에 1을 더한 ID를 할당.
+   *    - 유효하면 새로운 메모를 `add` 함수로 추가하고, 메모 리스트의 첫번째 ID에 1을 더한 ID를 할당.
    *    - 제목과 내용을 초기화하고, 모달을 닫고, 메모 추가 완료 메시지를 스낵바로 표시.
    *
    * 2. `MemoModalType.UPDATE`일 경우:
@@ -259,11 +259,12 @@ export default function List() {
         return;
       }
       add({
-        id: memoList.length ? memoList[memoList.length - 1].id + 1 : 0,
+        id: memoList.length ? memoList[0].id + 1 : 0,
         title: title,
         content: content,
         createdAt: getCreatedAt(),
       });
+
       setTitle("");
       setContent("");
       setIsMemoModalOpen(false);
