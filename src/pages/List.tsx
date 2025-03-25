@@ -2,7 +2,16 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Alert, Box, Button, Container, Fab, Snackbar } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Fab,
+  Snackbar,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 import { useCallback, useState } from "react";
@@ -14,6 +23,7 @@ import { useModal } from "src/hooks/useModal";
 import useMemoStore, { Memo } from "src/stores/memo";
 
 export default function List() {
+  const theme = useTheme();
   const memoList = useMemoStore((state) => state.memoList);
   const { add, update, remove } = useMemoStore((state) => state.actions);
 
@@ -25,6 +35,9 @@ export default function List() {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const { openModal, closeModal } = useModal();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   /**
    *
@@ -326,7 +339,7 @@ export default function List() {
 
   return (
     <Container maxWidth="lg">
-      <Grid container spacing={2} sx={{ paddingBottom: "56px" }}>
+      <Grid container spacing={2} sx={{ paddingBottom: "64px" }}>
         {memoList.map((memo, i) => {
           return (
             <Grid
@@ -351,7 +364,11 @@ export default function List() {
         <Fab
           color="primary"
           aria-label="add"
-          sx={{ position: "absolute", bottom: "16px", right: "16px" }}
+          sx={{
+            position: "absolute",
+            bottom: "16px",
+            right: `${isDesktop ? "48px" : isTablet ? "36px" : isMobile ? "16px" : "16px"}`,
+          }}
         >
           <AddIcon />
         </Fab>
