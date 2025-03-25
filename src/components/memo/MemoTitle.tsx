@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 /**
  * MemoTitle
  * @param title 메모 제목
- * @returns ReactNode
+ * @returns {ReactNode}
  */
 export default function MemoTitle({ title }: { title: string }) {
   return (

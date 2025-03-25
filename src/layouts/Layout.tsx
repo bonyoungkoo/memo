@@ -11,13 +11,9 @@ interface Layout {
  * 화면을 뷰포트에 맞추기 위한 레이아웃 컴포넌트
  * @param header 헤더
  * @param body 바디 (페이지 컴포넌트)
- * @returns ReactNode
+ * @returns {ReactNode}
  */
-export default function Layout({
-  header,
-  body,
-  // footer,
-}: Layout) {
+export default function Layout({ header, body }: Layout) {
   return (
     <Box sx={{ height: "100dvh", width: "100dvw" }}>
       <Stack

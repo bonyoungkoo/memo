@@ -40,9 +40,17 @@ export default function List() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   /**
+   * 각 메모 항목을 클릭할 때 호출되는 함수로, 선택된 메모의 상세 정보를 모달에 표시하기 위한 상태를 설정합니다.
    *
-   * @param memo
-   * @returns
+   * @param {Memo} memo
+   *
+   * 1. 선택된 메모 객체를 `setMemo`로 상태에 저장
+   * 2. `setTitle`을 사용해 메모의 제목을 설정
+   * 3. `setContent`로 메모의 내용을 설정
+   * 4. 모달 타입을 `MemoModalType.DETAIL`로 설정하여 모달을 상세모드로 표시
+   * 5. `setIsMemoModalOpen`을 `true`로 설정하여 모달을 열기
+   *
+   * @returns {void}
    */
   const handleClickMemo = (memo: Memo) => {
     setMemo(memo);
@@ -53,6 +61,19 @@ export default function List() {
     return;
   };
 
+  /**
+   * 각 메모 항목의 수정 아이콘을 클릭할 때 호출되는 함수로, 선택된 메모의 수정 정보를 모달에 표시하기 위한 상태를 설정합니다.
+   *
+   * @param {Memo} memo
+   *
+   * 1. 선택된 메모 객체를 `setMemo`로 상태에 저장
+   * 2. `setTitle`을 사용해 메모의 제목을 설정
+   * 3. `setContent`로 메모의 내용을 설정
+   * 4. 모달 타입을 `MemoModalType.DETAIL`로 설정하여 모달을 수정모드로 표시
+   * 5. `setIsMemoModalOpen`을 `true`로 설정하여 모달을 열기
+   *
+   * @returns {void}
+   */
   const handleClickUpdateIcon = (memo: Memo) => {
     setMemo(memo);
     setTitle(memo.title);
@@ -62,6 +83,22 @@ export default function List() {
     return;
   };
 
+  /**
+   * 각 메모 항목의 삭제 아이콘을 클릭할 때 호출되는 함수로, 메모 삭제 확인 모달을 띄우고 삭제를 수행합니다.
+   *
+   * @param {Memo} memo
+   *
+   * 1. 선택된 메모 객체를 `setMemo`로 상태에 저장
+   * 2. `openModal`을 호출하여 확인 모달을 열고, 삭제 여부를 묻는 메시지를 표시
+   *    - `ModalType.CONFIRM` 타입으로 모달을 열고, `contentText`로 삭제 메시지를 설정
+   *    - `cancleText`는 취소 버튼 텍스트, `confirmText`는 삭제 버튼 텍스트로 설정
+   *    - 취소 버튼 클릭 시 `closeModal()` 호출로 모달을 닫음
+   *    - 삭제 버튼 클릭 시 `remove(memo.id)`로 메모 삭제 수행 후 모달을 닫고
+   *      삭제 완료 메시지를 `setSnackbarMessage`로 설정하여 스낵바를 표시
+   * 3. `setIsSnackbarOpen(true)`로 스낵바를 열어 사용자에게 메모 삭제 완료 메시지를 표시
+   *
+   * @returns {void}
+   */
   const handleClickDeleteIcon = (memo: Memo) => {
     setMemo(memo);
     openModal({
@@ -80,6 +117,17 @@ export default function List() {
     return;
   };
 
+  /**
+   * 추가 버튼을 클릭할 때 호출되는 함수로, 새 메모를 추가하기 위한 상태를 초기화하고 모달을 엽니다.
+   *
+   * 1. `setMemo(undefined)`로 메모 상태를 초기화
+   * 2. `setTitle("")`로 제목 상태를 빈 문자열로 초기화
+   * 3. `setContent("")`로 내용 상태를 빈 문자열로 초기화
+   * 4. 모달 타입을 `MemoModalType.ADD`로 설정하여 모달을 추가모드로 표시
+   * 5. `setIsMemoModalOpen(true)`로 메모 추가 모달을 열기
+   *
+   * @returns {void}
+   */
   const handleClickAddButton = () => {
     setMemo(undefined);
     setTitle("");
@@ -155,6 +203,17 @@ export default function List() {
     return;
   }, [closeModal, memo, openModal, remove]);
 
+  /**
+   * 메모의 제목과 내용이 유효한지 검사하는 함수입니다.
+   *
+   * 1. 제목이 비어 있으면, 경고 모달을 띄우고 "제목을 입력해주세요." 메시지를 표시
+   *    - 제목이 입력되지 않은 경우 `false`를 반환하여 유효하지 않음을 알림
+   * 2. 내용이 2자 미만일 경우, 경고 모달을 띄우고 "내용을 2자 이상 입력해주세요." 메시지를 표시
+   *    - 내용이 너무 짧으면 `false`를 반환하여 유효하지 않음을 알림
+   * 3. 제목과 내용이 모두 유효하면 `true`를 반환하여 메모가 유효하다고 판단
+   *
+   * @returns {boolean} 제목과 내용이 유효하면 `true`, 그렇지 않으면 `false`
+   */
   const isValidMemo = useCallback(() => {
     if (!title) {
       openModal({
@@ -177,6 +236,23 @@ export default function List() {
     return true;
   }, [title, content, openModal, closeModal]);
 
+  /**
+   * 등록 버튼을 클릭할 때 호출되는 함수로, 메모를 추가, 수정하거나 상세보기 모드에서 처리합니다.
+   *
+   * 1. `MemoModalType.ADD`일 경우:
+   *    - 메모의 제목과 내용이 유효한지 `isValidMemo`로 검증
+   *    - 유효하지 않으면 `isValidMemo` 의 경고 모달을 띄우고 함수 종료
+   *    - 유효하면 새로운 메모를 `add` 함수로 추가하고, 메모 리스트의 마지막 ID에 1을 더한 ID를 할당.
+   *    - 제목과 내용을 초기화하고, 모달을 닫고, 메모 추가 완료 메시지를 스낵바로 표시.
+   *
+   * 2. `MemoModalType.UPDATE`일 경우:
+   *    - 메모의 제목과 내용이 유효한지 `isValidMemo`로 검증
+   *    - 유효하지 않으면 `isValidMemo` 의 경고 모달을 띄우고 함수 종료
+   *    - 제목과 내용이 변경되지 않았다면 경고 모달을 띄우고, 수정할 내용을 입력하라고 안내
+   *    - 변경이 있다면 `update` 함수로 수정된 메모를 업데이트하고, 수정 완료 메시지를 스낵바로 표시
+   *
+   * @returns {void}
+   */
   const handleClickRegisterButton = useCallback(() => {
     if (type === MemoModalType.ADD) {
       if (!isValidMemo()) {
@@ -218,17 +294,6 @@ export default function List() {
       setIsSnackbarOpen(true);
       return;
     }
-    if (type === MemoModalType.DETAIL) {
-      update({
-        id: memo!.id,
-        title: title,
-        content: content,
-        createdAt: getCreatedAt(),
-      });
-      setIsMemoModalOpen(false);
-      setIsSnackbarOpen(true);
-      return;
-    }
   }, [
     type,
     isValidMemo,
@@ -242,21 +307,69 @@ export default function List() {
     closeModal,
   ]);
 
+  /**
+   * 제목 Input 의 값이 변경될 때 호출되는 함수로, 입력/변경된 값을 제목 상태에 반영합니다.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - 메모 입력 시 Input 변경 이벤트
+   *
+   * Input 입력 값이 변경되면 해당 값을 `setTitle`을 사용하여 제목 상태에 저장
+   *
+   * @returns {void}
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
     return;
   };
 
+  /**
+   * 내용 Textarea 의 값이 변경될 때 호출되는 함수로, 입력/변경된 값을 내용 상태에 반영합니다.
+   *
+   * @param {React.ChangeEvent<HTMLTextAreaElement>} e - 메모 입력 시 Textarea 변경 이벤트
+   *
+   * Textarea 입력 값이 변경되면 해당 값을 `setContent`을 사용하여 내용 상태에 저장
+   *
+   * @returns {void}
+   */
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
     return;
   };
 
+  /**
+   * 현재 날짜와 시간을 `YYYY.MM.DD HH:MM` 형식으로 반환하는 함수입니다.
+   *
+   * 1. 현재 날짜와 시간을 `Date` 객체를 사용하여 가져옴
+   * 2. 연도, 월, 일, 시간, 분을 각각 추출하고, 시간과 분은 2자리 숫자 형식으로 반환되도록 `padStart`를 사용하여 포맷팅
+   *
+   * @returns {string} 현재 날짜와 시간을 `YYYY.MM.DD HH:MM` 형식의 문자열로 반환
+   */
   const getCreatedAt = () => {
     const now = new Date();
     return `${now.getFullYear()}.${now.getMonth() + 1}.${now.getDate()} ${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
   };
 
+  /**
+   * 현재 모달의 타입에 따라 버튼들을 렌더링하는 함수입니다.
+   *
+   * - `MemoModalType.ADD`일 경우:
+   *   - "취소" 버튼과 "등록" 버튼을 렌더링
+   *
+   * - `MemoModalType.UPDATE`일 경우:
+   *   - "취소" 버튼, "수정" 버튼, "삭제" 버튼을 렌더링
+   *
+   * - `MemoModalType.DETAIL`일 경우:
+   *   - "삭제" 버튼만 렌더링
+   *
+   * - 그 외의 경우:
+   *   - "확인" 버튼을 렌더링
+   *
+   * 각 버튼은 클릭 시 해당하는 콜백 함수가 실행됩니다:
+   * - `handleClickCloseButton`: 모달을 닫는 함수
+   * - `handleClickRegisterButton`: 메모 등록 또는 수정하는 함수
+   * - `handleClickDeleteButton`: 메모를 삭제하는 함수
+   *
+   * @returns {JSX.Element} 현재 모달 타입에 맞는 버튼 JSX 요소를 반환
+   */
   const renderButtons = useCallback(() => {
     switch (type) {
       case MemoModalType.ADD:
@@ -379,8 +492,7 @@ export default function List() {
         onClose={handleClickCloseButton}
         onClickCloseButton={handleClickCloseButton}
         type={type}
-        defaultTitle={memo?.title || ""}
-        defaultContent={memo?.content || ""}
+        memo={memo}
         onChangeInputTitle={handleInputChange}
         onChangeTextareaContent={handleTextareaChange}
         renderButtons={renderButtons}

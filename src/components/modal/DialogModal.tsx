@@ -26,14 +26,14 @@ export interface ModalProps {
 }
 
 /**
- * DialogModal 취소/확인 다이얼로그 모달
+ * 두 가지 타입(취소/확인)의 모달을 제공
  * @param type 모달 타입 ModalType 참고
- * @param contentText 모달 내용 텍스트
+ * @param contentText 모달에 표시할 내용 텍스트
  * @param cancleText 취소버튼 텍스트
  * @param confirmText 확인버튼 텍스트
- * @param onClickCancle 취소버튼 클릭 콜백함수
- * @param onClickConfirm 확인버튼 클릭 콜백함수
- * @returns
+ * @param onClickCancle 취소버튼 클릭 시 호출되는 콜백함수
+ * @param onClickConfirm 확인버튼 클릭 시 호출되는 콜백함수
+ * @returns {ReactNode}
  */
 export default function DialogModal({
   type,

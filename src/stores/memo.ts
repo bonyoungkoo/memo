@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-/**
- * id 메모 key 값
- * title 메모 제목
- * content 메모 내용
- * createdAt 메모 작성일(수정일)
+/** @interface Memo
+ * @property {number} id - 메모의 고유 ID
+ * @property {string} title - 메모의 제목
+ * @property {string} content - 메모의 내용
+ * @property {string} createdAt - 메모의 작성일(수정일) yyyy.MM.dd HH:mm
  */
 export interface Memo {
   id: number;
@@ -14,10 +14,12 @@ export interface Memo {
   createdAt: string;
 }
 
+// 상태 타입 정의
 type States = {
   memoList: Memo[];
 };
 
+// 액션 타입 정의
 type Actions = {
   actions: {
     add: (memo: Memo) => void;
@@ -27,14 +29,18 @@ type Actions = {
   };
 };
 
+// 초기 상태 정의
 const initialState: States = {
   memoList: [],
 };
 
 /**
- * add 메모 추가
- * update 메모 수정
- * remove 메모 삭제
+ * Action:
+ * - add 메모 추가
+ * - update 메모 수정
+ * - remove 메모 삭제
+ *
+ * 상태는 `localStorage`에 지속적으로 저장되어 앱을 새로 고침하거나 다시 시작해도 이전 데이터를 유지합니다.
  */
 const useMemoStore = create<States & Actions>()(
   persist(

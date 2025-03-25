@@ -13,7 +13,7 @@ import { Memo } from "src/stores/memo";
  * @param onClickMemo 메모 컴포넌트 클릭 콜백함수
  * @param onClickUpdate 수정버튼 클릭 콜백함수
  * @param onClickDelete 삭제버튼 클릭 콜백함수
- * @returns ReactNode
+ * @returns {ReactNode}
  */
 export default function MemoItem({
   item,
