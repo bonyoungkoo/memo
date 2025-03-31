@@ -1,6 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Container, Drawer, Stack } from "@mui/material";
 
+import { Ref } from "react";
+
 import { Memo } from "src/stores/memo";
 
 /**
@@ -35,6 +37,8 @@ export default function MemoModal({
   onChangeInputTitle,
   onChangeTextareaContent,
   renderButtons,
+  titleRef,
+  contentRef,
 }: {
   open: boolean;
   type: MemoModalType;
@@ -44,6 +48,8 @@ export default function MemoModal({
   onChangeInputTitle: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeTextareaContent: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   renderButtons: () => React.ReactNode;
+  titleRef: Ref<HTMLInputElement>;
+  contentRef: Ref<HTMLTextAreaElement>;
 }) {
   return (
     <Drawer
@@ -96,6 +102,7 @@ export default function MemoModal({
                 fontWeight: "700",
                 backgroundColor: "#FFFFFF",
               }}
+              ref={titleRef}
             />
             <textarea
               placeholder="내용을 2자 이상 입력하세요."
@@ -103,6 +110,7 @@ export default function MemoModal({
               readOnly={type === MemoModalType.DETAIL ? true : false}
               onChange={onChangeTextareaContent}
               style={{ flexGrow: 1, fontSize: "16px" }}
+              ref={contentRef}
             />
           </Stack>
           <Stack direction="column">

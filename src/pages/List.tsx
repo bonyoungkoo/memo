@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
+import React, { useRef } from "react";
 import { useCallback, useState } from "react";
 
 import MemoItem from "src/components/memo/MemoItem";
@@ -27,9 +28,9 @@ export default function List() {
   const memoList = useMemoStore((state) => state.memoList);
   const { add, update, remove } = useMemoStore((state) => state.actions);
 
+  const titleRef = useRef<HTMLInputElement | null>(null);
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
   const [memo, setMemo] = useState<Memo>();
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
   const [type, setType] = useState<MemoModalType>(MemoModalType.ADD);
   const [isMemoModalOpen, setIsMemoModalOpen] = useState<boolean>(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
@@ -39,27 +40,50 @@ export default function List() {
   const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // useEffect(() => {
+  //   truncate();
+  // }, []);
+
+  // useEffect(() => {
+  //   new Array(100).fill(null).map((v, i) => {
+  //     add({
+  //       id: i,
+  //       title: `더미${i}`,
+  //       content: "내용",
+  //       createdAt: getCreatedAt(),
+  //     });
+  //   });
+  // }, []);
+
   /**
    * 각 메모 항목을 클릭할 때 호출되는 함수로, 선택된 메모의 상세 정보를 모달에 표시하기 위한 상태를 설정합니다.
    *
    * @param {Memo} memo
    *
    * 1. 선택된 메모 객체를 `setMemo`로 상태에 저장
-   * 2. `setTitle`을 사용해 메모의 제목을 설정
-   * 3. `setContent`로 메모의 내용을 설정
+   * 2. `titleRef`로 메모의 제목을 설정
+   * 3. `contentRef`로 메모의 내용을 설정
    * 4. 모달 타입을 `MemoModalType.DETAIL`로 설정하여 모달을 상세모드로 표시
    * 5. `setIsMemoModalOpen`을 `true`로 설정하여 모달을 열기
    *
    * @returns {void}
    */
-  const handleClickMemo = (memo: Memo) => {
+  const handleClickMemo = useCallback((memo: Memo) => {
     setMemo(memo);
-    setTitle(memo.title);
-    setContent(memo.content);
+    console.log("sdfss");
+    if (titleRef.current) {
+      console.log("sdf");
+      titleRef.current.value = memo.title;
+    }
+    if (contentRef.current) {
+      contentRef.current.value = memo.content;
+    }
+    // setTitle(memo.title);
+    // setContent(memo.content);
     setType(MemoModalType.DETAIL);
     setIsMemoModalOpen(true);
     return;
-  };
+  }, []);
 
   /**
    * 각 메모 항목의 수정 아이콘을 클릭할 때 호출되는 함수로, 선택된 메모의 수정 정보를 모달에 표시하기 위한 상태를 설정합니다.
@@ -67,21 +91,27 @@ export default function List() {
    * @param {Memo} memo
    *
    * 1. 선택된 메모 객체를 `setMemo`로 상태에 저장
-   * 2. `setTitle`을 사용해 메모의 제목을 설정
-   * 3. `setContent`로 메모의 내용을 설정
+   * 2. `titleRef`을 사용해 메모의 제목을 설정
+   * 3. `contentRef`로 메모의 내용을 설정
    * 4. 모달 타입을 `MemoModalType.DETAIL`로 설정하여 모달을 수정모드로 표시
    * 5. `setIsMemoModalOpen`을 `true`로 설정하여 모달을 열기
    *
    * @returns {void}
    */
-  const handleClickUpdateIcon = (memo: Memo) => {
+  const handleClickUpdateIcon = useCallback((memo: Memo) => {
     setMemo(memo);
-    setTitle(memo.title);
-    setContent(memo.content);
+    if (titleRef.current) {
+      titleRef.current.value = memo.title;
+    }
+    if (contentRef.current) {
+      contentRef.current.value = memo.content;
+    }
+    // setTitle(memo.title);
+    // setContent(memo.content);
     setType(MemoModalType.UPDATE);
     setIsMemoModalOpen(true);
     return;
-  };
+  }, []);
 
   /**
    * 각 메모 항목의 삭제 아이콘을 클릭할 때 호출되는 함수로, 메모 삭제 확인 모달을 띄우고 삭제를 수행합니다.
@@ -99,43 +129,52 @@ export default function List() {
    *
    * @returns {void}
    */
-  const handleClickDeleteIcon = (memo: Memo) => {
-    setMemo(memo);
-    openModal({
-      type: ModalType.CONFIRM,
-      contentText: "해당 메모를 삭제하시겠습니까?",
-      cancleText: "취소",
-      confirmText: "삭제",
-      onClickCancle: () => closeModal(),
-      onClickConfirm: () => {
-        remove(memo.id);
-        closeModal();
-        setSnackbarMessage("메모가 삭제되었습니다.");
-        setIsSnackbarOpen(true);
-      },
-    });
-    return;
-  };
+  const handleClickDeleteIcon = useCallback(
+    (memo: Memo) => {
+      setMemo(memo);
+      openModal({
+        type: ModalType.CONFIRM,
+        contentText: "해당 메모를 삭제하시겠습니까?",
+        cancleText: "취소",
+        confirmText: "삭제",
+        onClickCancle: () => closeModal(),
+        onClickConfirm: () => {
+          remove(memo.id);
+          closeModal();
+          setSnackbarMessage("메모가 삭제되었습니다.");
+          setIsSnackbarOpen(true);
+        },
+      });
+      return;
+    },
+    [closeModal, openModal, remove],
+  );
 
   /**
    * 추가 버튼을 클릭할 때 호출되는 함수로, 새 메모를 추가하기 위한 상태를 초기화하고 모달을 엽니다.
    *
    * 1. `setMemo(undefined)`로 메모 상태를 초기화
-   * 2. `setTitle("")`로 제목 상태를 빈 문자열로 초기화
-   * 3. `setContent("")`로 내용 상태를 빈 문자열로 초기화
+   * 2. `titleRef.current.value = ""로 제목을 빈 문자열로 초기화
+   * 3. `contentRef.current.value = ""`로 내용을 빈 문자열로 초기화
    * 4. 모달 타입을 `MemoModalType.ADD`로 설정하여 모달을 추가모드로 표시
    * 5. `setIsMemoModalOpen(true)`로 메모 추가 모달을 열기
    *
    * @returns {void}
    */
-  const handleClickAddButton = () => {
+  const handleClickAddButton = useCallback(() => {
     setMemo(undefined);
-    setTitle("");
-    setContent("");
+    if (titleRef.current) {
+      titleRef.current.value = "";
+    }
+    if (contentRef.current) {
+      contentRef.current.value = "";
+    }
+    // setTitle("");
+    // setContent("");
     setType(MemoModalType.ADD);
     setIsMemoModalOpen(true);
     return;
-  };
+  }, []);
 
   const handleClickCloseButton = useCallback(() => {
     if (type === MemoModalType.DETAIL) {
@@ -143,7 +182,7 @@ export default function List() {
       return;
     }
     if (type === MemoModalType.ADD) {
-      if (title || content) {
+      if (titleRef.current?.value || contentRef.current?.value) {
         openModal({
           type: ModalType.CONFIRM,
           contentText:
@@ -163,7 +202,12 @@ export default function List() {
       }
     }
     if (type === MemoModalType.UPDATE) {
-      if (memo?.title !== title || memo?.content !== content) {
+      console.log(memo?.title);
+      console.log(titleRef.current?.value);
+      if (
+        memo?.title !== titleRef.current?.value ||
+        memo?.content !== contentRef.current?.value
+      ) {
         openModal({
           type: ModalType.CONFIRM,
           contentText:
@@ -182,7 +226,7 @@ export default function List() {
         return;
       }
     }
-  }, [closeModal, content, memo, openModal, title, type]);
+  }, [closeModal, memo, openModal, type]);
 
   const handleClickDeleteButton = useCallback(() => {
     setMemo(memo);
@@ -215,7 +259,7 @@ export default function List() {
    * @returns {boolean} 제목과 내용이 유효하면 `true`, 그렇지 않으면 `false`
    */
   const isValidMemo = useCallback(() => {
-    if (!title) {
+    if (!titleRef.current?.value) {
       openModal({
         type: ModalType.ALERT,
         contentText: "제목을 입력해주세요.",
@@ -224,7 +268,7 @@ export default function List() {
       });
       return false;
     }
-    if (content.length < 2) {
+    if (contentRef.current?.value && contentRef.current.value.length < 2) {
       openModal({
         type: ModalType.ALERT,
         contentText: "내용을 2자 이상 입력해주세요.",
@@ -234,7 +278,7 @@ export default function List() {
       return false;
     }
     return true;
-  }, [title, content, openModal, closeModal]);
+  }, [openModal, closeModal]);
 
   /**
    * 등록 버튼을 클릭할 때 호출되는 함수로, 메모를 추가, 수정하거나 상세보기 모드에서 처리합니다.
@@ -260,13 +304,13 @@ export default function List() {
       }
       add({
         id: memoList.length ? memoList[0].id + 1 : 0,
-        title: title,
-        content: content,
+        title: titleRef.current?.value || "",
+        content: contentRef.current?.value || "",
         createdAt: getCreatedAt(),
       });
 
-      setTitle("");
-      setContent("");
+      // setTitle("");
+      // setContent("");
       setIsMemoModalOpen(false);
       setSnackbarMessage("메모가 추가되었습니다.");
       setIsSnackbarOpen(true);
@@ -276,7 +320,10 @@ export default function List() {
       if (!isValidMemo()) {
         return;
       }
-      if (memo?.title === title && memo?.content === content) {
+      if (
+        memo?.title === titleRef.current?.value &&
+        memo?.content === contentRef.current?.value
+      ) {
         openModal({
           type: ModalType.ALERT,
           contentText: "메모가 이전과 동일합니다.\n수정할 내용을 입력해주세요.",
@@ -286,8 +333,8 @@ export default function List() {
       }
       update({
         id: memo!.id,
-        title: title,
-        content: content,
+        title: titleRef.current?.value || "",
+        content: contentRef.current?.value || "",
         createdAt: getCreatedAt(),
       });
       setIsMemoModalOpen(false);
@@ -295,18 +342,7 @@ export default function List() {
       setIsSnackbarOpen(true);
       return;
     }
-  }, [
-    type,
-    isValidMemo,
-    add,
-    memoList,
-    title,
-    content,
-    memo,
-    update,
-    openModal,
-    closeModal,
-  ]);
+  }, [type, isValidMemo, add, memoList, memo, update, openModal, closeModal]);
 
   /**
    * 제목 Input 의 값이 변경될 때 호출되는 함수로, 입력/변경된 값을 제목 상태에 반영합니다.
@@ -317,10 +353,15 @@ export default function List() {
    *
    * @returns {void}
    */
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    return;
-  };
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (titleRef.current) {
+        titleRef.current.value = e.target.value;
+      }
+      return;
+    },
+    [],
+  );
 
   /**
    * 내용 Textarea 의 값이 변경될 때 호출되는 함수로, 입력/변경된 값을 내용 상태에 반영합니다.
@@ -331,10 +372,15 @@ export default function List() {
    *
    * @returns {void}
    */
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-    return;
-  };
+  const handleTextareaChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (contentRef.current) {
+        contentRef.current.value = e.target.value;
+      }
+      return;
+    },
+    [],
+  );
 
   /**
    * 현재 날짜와 시간을 `YYYY.MM.DD HH:MM` 형식으로 반환하는 함수입니다.
@@ -451,6 +497,17 @@ export default function List() {
     handleClickRegisterButton,
   ]);
 
+  const MemoList = React.memo(({ memo }: { memo: Memo }) => {
+    return (
+      <MemoItem
+        item={memo}
+        onClickMemo={handleClickMemo}
+        onClickUpdate={handleClickUpdateIcon}
+        onClickDelete={handleClickDeleteIcon}
+      />
+    );
+  });
+
   return (
     <Container maxWidth="lg">
       <Grid container spacing={2} sx={{ paddingBottom: "64px" }}>
@@ -461,12 +518,7 @@ export default function List() {
               size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 4 }}
               sx={{ height: "100px" }}
             >
-              <MemoItem
-                item={memo}
-                onClickMemo={handleClickMemo}
-                onClickUpdate={handleClickUpdateIcon}
-                onClickDelete={handleClickDeleteIcon}
-              />
+              <MemoList memo={memo} />
             </Grid>
           );
         })}
@@ -497,6 +549,8 @@ export default function List() {
         onChangeInputTitle={handleInputChange}
         onChangeTextareaContent={handleTextareaChange}
         renderButtons={renderButtons}
+        titleRef={titleRef}
+        contentRef={contentRef}
       />
 
       <Snackbar
