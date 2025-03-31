@@ -268,7 +268,7 @@ export default function List() {
       });
       return false;
     }
-    if (contentRef.current?.value && contentRef.current.value.length < 2) {
+    if (!contentRef.current?.value || contentRef.current?.value.length < 2) {
       openModal({
         type: ModalType.ALERT,
         contentText: "내용을 2자 이상 입력해주세요.",
