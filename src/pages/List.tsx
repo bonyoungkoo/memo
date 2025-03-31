@@ -511,10 +511,10 @@ export default function List() {
   return (
     <Container maxWidth="lg">
       <Grid container spacing={2} sx={{ paddingBottom: "64px" }}>
-        {memoList.map((memo, i) => {
+        {memoList.map((memo) => {
           return (
             <Grid
-              key={i}
+              key={memo.id}
               size={{ xs: 12, sm: 12, md: 6, lg: 6, xl: 4 }}
               sx={{ height: "100px" }}
             >
