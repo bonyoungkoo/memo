@@ -70,9 +70,7 @@ export default function List() {
    */
   const handleClickMemo = useCallback((memo: Memo) => {
     setMemo(memo);
-    console.log("sdfss");
     if (titleRef.current) {
-      console.log("sdf");
       titleRef.current.value = memo.title;
     }
     if (contentRef.current) {
@@ -202,8 +200,6 @@ export default function List() {
       }
     }
     if (type === MemoModalType.UPDATE) {
-      console.log(memo?.title);
-      console.log(titleRef.current?.value);
       if (
         memo?.title !== titleRef.current?.value ||
         memo?.content !== contentRef.current?.value
